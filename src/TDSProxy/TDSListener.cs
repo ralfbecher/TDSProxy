@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using TDSProxy.Authentication;
 using TDSProxy.Configuration;
@@ -38,19 +39,19 @@ namespace TDSProxy
 
 			_service = service;
 
-			var bindToEP = new IPEndPoint(configuration.BindToAddress ?? IPAddress.Any, configuration.ListenOnPort);
+			var bindToEP = new IPEndPoint(configuration.GetBindToAddress() ?? IPAddress.Any, configuration.ListenOnPort);
 
 			try
 			{
-				var catalog = new AggregateCatalog(from AuthenticatorElement a in configuration.Authenticators
+				var catalog = new AggregateCatalog(from a in configuration.Authenticators
 				                                   select new AssemblyCatalog(a.Dll));
 				_mefContainer = new CompositionContainer(catalog);
 
-                _authenticators = _mefContainer.GetExports<IAuthenticator>().ToArray();
-                if (!_authenticators.Any())
-                {
-                    throw new InvalidOperationException("No authenticators");
-                }
+				_authenticators = _mefContainer.GetExports<IAuthenticator>().ToArray();
+				if (!_authenticators.Any())
+				{
+					throw new InvalidOperationException("No authenticators");
+				}
 			}
 			catch (CompositionException ce)
 			{
@@ -70,21 +71,13 @@ namespace TDSProxy
 
 			try
 			{
-				log.DebugFormat("Opening SSL certificate store {0}.{1}", configuration.SslCertStoreLocation, configuration.SslCertStoreName);
-				var store = new X509Store(configuration.SslCertStoreName, configuration.SslCertStoreLocation);
-				store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-				var matching = store.Certificates.Find(X509FindType.FindByThumbprint, configuration.SslCertSubjectThumbprint, false);
-				if (0 == matching.Count)
+				Certificate = LoadCertificate(configuration);
+				if (Certificate == null)
 				{
-					log.ErrorFormat(
-						"Failed to find SSL certification with thumbprint '{0}' in location {1}, store {2}.",
-						configuration.SslCertSubjectThumbprint,
-						configuration.SslCertStoreLocation,
-						configuration.SslCertStoreName);
+					log.Error("Failed to load SSL certificate - certificate is null");
 					Dispose();
 					return;
 				}
-				Certificate = matching[0];
 			}
 			catch (Exception e)
 			{
@@ -109,7 +102,91 @@ namespace TDSProxy
 				Certificate.GetExpirationDateString());
 		}
 
-		//public IAuthenticator Authenticator { get; private set; }
+		private X509Certificate2 LoadCertificate(ListenerElement configuration)
+		{
+			var certConfig = configuration.SslCertificate;
+			if (certConfig == null)
+			{
+				throw new InvalidOperationException($"No SSL certificate configuration for listener {configuration.Name}");
+			}
+
+			if (string.Equals(certConfig.Source, "File", StringComparison.OrdinalIgnoreCase))
+			{
+				return LoadCertificateFromFile(certConfig, configuration.Name);
+			}
+			else if (string.Equals(certConfig.Source, "Store", StringComparison.OrdinalIgnoreCase))
+			{
+				return LoadCertificateFromStore(certConfig, configuration.Name);
+			}
+			else
+			{
+				throw new InvalidOperationException($"Unknown certificate source '{certConfig.Source}' for listener {configuration.Name}. Use 'File' or 'Store'.");
+			}
+		}
+
+		private X509Certificate2 LoadCertificateFromFile(SslCertificateConfig certConfig, string listenerName)
+		{
+			if (string.IsNullOrEmpty(certConfig.FilePath))
+			{
+				throw new InvalidOperationException($"Certificate file path not specified for listener {listenerName}");
+			}
+
+			var filePath = certConfig.FilePath;
+			if (!Path.IsPathRooted(filePath))
+			{
+				filePath = Path.Combine(AppContext.BaseDirectory, filePath);
+			}
+
+			if (!File.Exists(filePath))
+			{
+				throw new FileNotFoundException($"Certificate file not found: {filePath}", filePath);
+			}
+
+			log.DebugFormat("Loading SSL certificate from file: {0}", filePath);
+
+			if (string.IsNullOrEmpty(certConfig.Password))
+			{
+				return new X509Certificate2(filePath);
+			}
+			else
+			{
+				return new X509Certificate2(filePath, certConfig.Password, X509KeyStorageFlags.PersistKeySet);
+			}
+		}
+
+		private X509Certificate2 LoadCertificateFromStore(SslCertificateConfig certConfig, string listenerName)
+		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				throw new PlatformNotSupportedException(
+					$"Certificate store loading is only supported on Windows. " +
+					$"Use 'File' source for cross-platform certificate loading on listener {listenerName}.");
+			}
+
+			if (string.IsNullOrEmpty(certConfig.Thumbprint))
+			{
+				throw new InvalidOperationException($"Certificate thumbprint not specified for listener {listenerName}");
+			}
+
+			var storeName = Enum.Parse<StoreName>(certConfig.StoreName ?? "My");
+			var storeLocation = Enum.Parse<StoreLocation>(certConfig.StoreLocation ?? "CurrentUser");
+
+			log.DebugFormat("Opening SSL certificate store {0}.{1}", storeLocation, storeName);
+
+			using var store = new X509Store(storeName, storeLocation);
+			store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+			var matching = store.Certificates.Find(X509FindType.FindByThumbprint, certConfig.Thumbprint, false);
+
+			if (0 == matching.Count)
+			{
+				throw new InvalidOperationException(
+					$"Failed to find SSL certificate with thumbprint '{certConfig.Thumbprint}' " +
+					$"in location {storeLocation}, store {storeName}.");
+			}
+
+			return matching[0];
+		}
+
 		private Lazy<IAuthenticator>[] _authenticators;
 
 		public IEnumerable<Lazy<IAuthenticator>> Authenticators =>
@@ -117,7 +194,6 @@ namespace TDSProxy
 				? (Lazy<IAuthenticator>[])_authenticators.Clone()
 				: throw new ObjectDisposedException(nameof(TDSListener));
 
-		// ReSharper disable once MemberCanBePrivate.Global
 		public IPEndPoint ForwardTo { get; }
 
 		private void AcceptConnection(IAsyncResult result)
@@ -139,7 +215,6 @@ namespace TDSProxy
 				}
 
 				// Process this connection
-				// ReSharper disable once ObjectCreationAsStatement -- constructed object registers itself
 				new TDSConnection(_service, this, readClient, ForwardTo);
 			}
 			catch (ObjectDisposedException) { /* We're shutting down, ignore */ }
@@ -148,8 +223,15 @@ namespace TDSProxy
 				log.Fatal("Error in AcceptConnection.", e);
 			}
 
-            // Listen for next connection -- Do this here so we accept new connections even if this attempt to accept failed.
-            _tcpListener.BeginAcceptTcpClient(AcceptConnection, _tcpListener);
+			// Listen for next connection -- Do this here so we accept new connections even if this attempt to accept failed.
+			if (!_stopped)
+			{
+				try
+				{
+					_tcpListener?.BeginAcceptTcpClient(AcceptConnection, _tcpListener);
+				}
+				catch (ObjectDisposedException) { /* We're shutting down, ignore */ }
+			}
 		}
 
 		public void Dispose()

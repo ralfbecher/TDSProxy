@@ -1,13 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
-using System.ServiceProcess;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using TDSProxy.Configuration;
 
 namespace TDSProxy
 {
-	public sealed partial class TDSProxyService : ServiceBase
+	public sealed class TDSProxyService : IHostedService, IDisposable
 	{
 		#region Log4Net
 		static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -19,41 +22,34 @@ namespace TDSProxy
 		public static bool AllowUnencryptedConnections { get; private set; }
 
 		private readonly HashSet<TDSListener> _listeners = new HashSet<TDSListener>();
+		private readonly TdsProxySection _configuration;
 
 		private bool _stopRequested;
 
-		private static Configuration.TdsProxySection _configuration;
-		// ReSharper disable once MemberCanBePrivate.Global
-		public static Configuration.TdsProxySection Configuration
+		public TDSProxyService(IOptions<TdsProxySection> configuration)
 		{
-			get 
-			{
-				if (null == _configuration)
-					try
-					{
-						_configuration = (Configuration.TdsProxySection)ConfigurationManager.GetSection("tdsProxy");
-					}
-					catch (Exception e)
-					{
-						log.Error("Error reading configuration", e);
-						throw;
-					}
-				return _configuration;
-			}
+			_configuration = configuration.Value;
 		}
 
-		public TDSProxyService()
+		public TdsProxySection Configuration => _configuration;
+
+		public Task StartAsync(CancellationToken cancellationToken)
 		{
-			InitializeComponent();
+			Start(Environment.GetCommandLineArgs().Skip(1).ToArray());
+			return Task.CompletedTask;
 		}
 
-		protected override void OnStart(string[] args) => Start(args);
+		public Task StopAsync(CancellationToken cancellationToken)
+		{
+			Stop();
+			return Task.CompletedTask;
+		}
 
 		public void Start(string[] args)
 		{
 			log.InfoFormat(
 				"\r\n-----------------\r\nService Starting on {0} with security protocol {1}.\r\n-----------------\r\n",
-				AppContext.TargetFrameworkName,
+				System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
 				ServicePointManager.SecurityProtocol);
 
 			if (args.Any(a => string.Equals(a, "debug", StringComparison.OrdinalIgnoreCase)))
@@ -66,22 +62,18 @@ namespace TDSProxy
 			if (VerboseLogging)
 				log.Debug("Verbose logging is on.");
 
-			// ReSharper disable once StringLiteralTypo
 			VerboseLoggingInWrapper = args.Any(a => string.Equals(a, "wrapperverbose", StringComparison.OrdinalIgnoreCase));
 			if (VerboseLoggingInWrapper)
 				log.Debug("Verbose logging is on in TDS/SSL wrapper.");
 
-			// ReSharper disable once StringLiteralTypo
 			TDSProtocol.TDSPacket.DumpPackets = args.Any(a => string.Equals(a, "packetdump", StringComparison.OrdinalIgnoreCase));
 			if (TDSProtocol.TDSPacket.DumpPackets)
 				log.Debug("Packet dumping is on.");
 
-			// ReSharper disable once StringLiteralTypo
 			SkipLoginProcessing = args.Any(a => string.Equals(a, "skiplogin", StringComparison.OrdinalIgnoreCase));
 			if (SkipLoginProcessing)
 				log.Debug("Skipping login processing.");
 
-			// ReSharper disable once StringLiteralTypo
 			AllowUnencryptedConnections = args.Any(a => string.Equals(a, "allowunencrypted", StringComparison.OrdinalIgnoreCase));
 			if (AllowUnencryptedConnections)
 				log.Debug("Allowing unencrypted connections (but encryption must be supported because we will not allow unencrypted login).");
@@ -93,9 +85,7 @@ namespace TDSProxy
 			log.Info("TDSProxyService initialization complete.");
 		}
 
-		protected override void OnStop() => Stop();
-
-		public new void Stop()
+		public void Stop()
 		{
 			log.Info("Stopping TDSProxyService");
 			LogStats();
@@ -107,45 +97,13 @@ namespace TDSProxy
 
 		public bool StopRequested => _stopRequested;
 
-		protected override void OnPause()
-		{
-			StopListeners();
-			log.Info("Service paused.");
-		}
-
-		protected override void OnContinue()
-		{
-			log.Info("Resuming service.");
-			RefreshConfiguration();
-			StartListeners();
-		}
-
-		protected override void OnCustomCommand(int command)
-		{
-			if (_stopRequested)
-				return;
-
-			switch (command)
-			{
-			case 200:
-				LogStats();
-				break;
-			case 201:
-				StopListeners();
-				RefreshConfiguration();
-				StartListeners();
-				break;
-			}
-		}
-
 		public event EventHandler Stopping;
 
 		private void OnStopping(EventArgs e) => Stopping?.Invoke(this, e);
 
 		private void StartListeners()
 		{
-			foreach (Configuration.ListenerElement listenerConfig in Configuration.Listeners)
-				// ReSharper disable once ObjectCreationAsStatement -- constructed object registers itself
+			foreach (var listenerConfig in _configuration.Listeners)
 				new TDSListener(this, listenerConfig);
 		}
 
@@ -155,15 +113,8 @@ namespace TDSProxy
 			lock (_listeners)
 				listeners = new List<TDSListener>(_listeners);
 
-			// NOTE: listeners de-register themselves
 			foreach (var listener in listeners)
 				listener.Dispose();
-		}
-
-		private void RefreshConfiguration()
-		{
-			ConfigurationManager.RefreshSection("tdsProxy");
-			_configuration = null;
 		}
 
 		private void LogStats()
@@ -185,6 +136,11 @@ namespace TDSProxy
 		{
 			lock (_listeners)
 				_listeners.Remove(listener);
+		}
+
+		public void Dispose()
+		{
+			Stop();
 		}
 	}
 }

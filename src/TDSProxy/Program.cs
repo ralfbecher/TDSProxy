@@ -1,5 +1,10 @@
-﻿using System;
-using System.ServiceProcess;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using TDSProxy.Configuration;
 
 namespace TDSProxy
 {
@@ -8,22 +13,39 @@ namespace TDSProxy
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
-			Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			// Set current directory to application base directory
+			Environment.CurrentDirectory = AppContext.BaseDirectory;
 
-			var service = new TDSProxyService();
-			if (Environment.UserInteractive)
+			// Configure log4net
+			var logConfigPath = Path.Combine(AppContext.BaseDirectory, "log4net.config");
+			if (File.Exists(logConfigPath))
 			{
-				service.Start(args);
-				Console.Write("Press ESC to end...");
-				while (Console.ReadKey(false).Key != ConsoleKey.Escape) {}
-				service.Stop();
+				log4net.Config.XmlConfigurator.ConfigureAndWatch(new FileInfo(logConfigPath));
 			}
-			else
-			{
-				ServiceBase.Run(new TDSProxyService());
-			}
+
+			var host = Host.CreateDefaultBuilder(args)
+				.ConfigureAppConfiguration((context, config) =>
+				{
+					config.SetBasePath(AppContext.BaseDirectory);
+					config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+					config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+					config.AddEnvironmentVariables("TDSPROXY_");
+					config.AddCommandLine(args);
+				})
+				.ConfigureServices((context, services) =>
+				{
+					// Bind configuration
+					services.Configure<TdsProxySection>(context.Configuration.GetSection("TdsProxy"));
+
+					// Register the proxy service as a hosted service
+					services.AddHostedService<TDSProxyService>();
+				})
+				.UseConsoleLifetime()
+				.Build();
+
+			await host.RunAsync();
 		}
 	}
 }

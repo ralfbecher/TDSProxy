@@ -1,15 +1,12 @@
-﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Xunit;
 using TDSProtocol;
 
 namespace TDSProtocolTests
 {
-	[TestClass]
 	public class BinaryReaderExtensionsUnitTests
 	{
-		[TestMethod]
+		[Fact]
 		public void TestInt16Positive()
 		{
 			byte[] value = { 0x43, 0x21 };
@@ -20,10 +17,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianInt16();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt16Negative()
 		{
 			byte[] value = { 0xED, 0xCB };
@@ -34,10 +31,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianInt16();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt16Small()
 		{
 			byte[] value = { 0x12, 0x34 };
@@ -48,10 +45,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianUInt16();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt16Large()
 		{
 			byte[] value = { 0xBC, 0xDE };
@@ -62,10 +59,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianUInt16();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt32Positive()
 		{
 			byte[] value = { 0x44, 0x33, 0x22, 0x11 };
@@ -76,10 +73,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianInt32();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt32Negative()
 		{
 			byte[] value = { 0xBB, 0xCC, 0xDD, 0xEE };
@@ -90,10 +87,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianInt32();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt32Small()
 		{
 			byte[] value = { 0x12, 0x34, 0x23, 0x45 };
@@ -104,10 +101,10 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianUInt32();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt32Large()
 		{
 			byte[] value = { 0xBC, 0xDE, 0xCD, 0xEF };
@@ -118,7 +115,7 @@ namespace TDSProtocolTests
 			using (var br = new BinaryReader(ms))
 				actual = br.ReadBigEndianUInt32();
 
-			Assert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 	}
 }

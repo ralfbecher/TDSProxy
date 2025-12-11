@@ -1,15 +1,12 @@
-﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Xunit;
 using TDSProtocol;
 
 namespace TDSProtocolTests
 {
-	[TestClass]
 	public class BinaryWriterExtensionsUnitTests
 	{
-		[TestMethod]
+		[Fact]
 		public void TestInt16Positive()
 		{
 			short value = 0x1234;
@@ -20,10 +17,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt16Negative()
 		{
 			short value = -0x5433; // = 0xABCD
@@ -34,10 +31,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt16Small()
 		{
 			ushort value = 0x2345;
@@ -48,10 +45,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt16Large()
 		{
 			ushort value = 0xBCDE;
@@ -62,10 +59,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt32Positive()
 		{
 			int value = 0x1A253A45;
@@ -76,10 +73,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInt32Negative()
 		{
 			int value = -0x5EAD5CAC; // = 0xA152A354
@@ -90,10 +87,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt32Small()
 		{
 			uint value = 0x152A354A;
@@ -104,10 +101,10 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestUInt32Large()
 		{
 			uint value = 0xA453A251;
@@ -118,7 +115,7 @@ namespace TDSProtocolTests
 			using (var bw = new BinaryWriter(ms))
 				bw.WriteBigEndian(value);
 
-			CollectionAssert.AreEqual(expected, actual);
+			Assert.Equal(expected, actual);
 		}
 	}
 }

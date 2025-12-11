@@ -1,14 +1,11 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
+using Xunit;
 using TDSProtocol;
 
 namespace TDSProtocolTests
 {
-	[TestClass]
 	public class TDSPreLoginMessageTests
 	{
-		[TestMethod]
+		[Fact]
 		public void TestInterpretPayloadSimple()
 		{
 			TDSPreLoginMessage expected =
@@ -34,17 +31,17 @@ namespace TDSProtocolTests
 			                            };
 			actual.InterpretPayload();
 
-			Assert.AreEqual(expected.Version, actual.Version);
-			Assert.AreEqual(expected.Encryption, actual.Encryption);
+			Assert.Equal(expected.Version, actual.Version);
+			Assert.Equal(expected.Encryption, actual.Encryption);
 			EnumerableAssert.AreEqual(expected.InstValidity, actual.InstValidity);
-			Assert.AreEqual(expected.ThreadId, actual.ThreadId);
-			Assert.AreEqual(expected.Mars, actual.Mars);
-			Assert.AreEqual(expected.TraceId, actual.TraceId);
-			Assert.AreEqual(expected.FedAuthRequired, actual.FedAuthRequired);
+			Assert.Equal(expected.ThreadId, actual.ThreadId);
+			Assert.Equal(expected.Mars, actual.Mars);
+			Assert.Equal(expected.TraceId, actual.TraceId);
+			Assert.Equal(expected.FedAuthRequired, actual.FedAuthRequired);
 			EnumerableAssert.AreEqual(expected.Nonce, actual.Nonce);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInterpretPayloadEmptyTrace()
 		{
 			TDSPreLoginMessage expected =
@@ -71,17 +68,17 @@ namespace TDSProtocolTests
 			                            };
 			actual.InterpretPayload();
 
-			Assert.AreEqual(expected.Version, actual.Version);
-			Assert.AreEqual(expected.Encryption, actual.Encryption);
+			Assert.Equal(expected.Version, actual.Version);
+			Assert.Equal(expected.Encryption, actual.Encryption);
 			EnumerableAssert.AreEqual(expected.InstValidity, actual.InstValidity);
-			Assert.AreEqual(expected.ThreadId, actual.ThreadId);
-			Assert.AreEqual(expected.Mars, actual.Mars);
-			Assert.AreEqual(expected.TraceId, actual.TraceId);
-			Assert.AreEqual(expected.FedAuthRequired, actual.FedAuthRequired);
+			Assert.Equal(expected.ThreadId, actual.ThreadId);
+			Assert.Equal(expected.Mars, actual.Mars);
+			Assert.Equal(expected.TraceId, actual.TraceId);
+			Assert.Equal(expected.FedAuthRequired, actual.FedAuthRequired);
 			EnumerableAssert.AreEqual(expected.Nonce, actual.Nonce);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestGeneratePayloadSimple()
 		{
 			TDSPreLoginMessage msg =

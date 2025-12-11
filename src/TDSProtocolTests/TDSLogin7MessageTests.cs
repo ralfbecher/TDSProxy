@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 using TDSProtocol;
 
 namespace TDSProtocolTests
 {
-	[TestClass]
 	public class TDSLogin7MessageTests
 	{
-		[TestMethod]
+		[Fact]
 		public void TestInterpretPayloadSimple()
 		{
 			TDSLogin7Message expected =
@@ -52,33 +51,33 @@ namespace TDSProtocolTests
 				};
 			actual.InterpretPayload();
 
-			Assert.AreEqual(expected.TdsVersion, actual.TdsVersion);
-			Assert.AreEqual(expected.PacketSize, actual.PacketSize);
-			Assert.AreEqual(expected.ClientProgVer, actual.ClientProgVer);
-			Assert.AreEqual(expected.ClientPid, actual.ClientPid);
-			Assert.AreEqual(expected.ConnectionId, actual.ConnectionId);
-			Assert.AreEqual(expected.OptionFlags1, actual.OptionFlags1);
-			Assert.AreEqual(expected.OptionFlags2, actual.OptionFlags2);
-			Assert.AreEqual(expected.TypeFlags, actual.TypeFlags);
-			Assert.AreEqual(expected.OptionFlags3, actual.OptionFlags3);
-			Assert.AreEqual(expected.ClientTimeZone, actual.ClientTimeZone);
-			Assert.AreEqual(expected.ClientLCID, actual.ClientLCID);
-			Assert.AreEqual(expected.HostName, actual.HostName);
-			Assert.AreEqual(expected.UserName, actual.UserName);
-			Assert.AreEqual(expected.Password, actual.Password);
-			Assert.AreEqual(expected.AppName, actual.AppName);
-			Assert.AreEqual(expected.ServerName, actual.ServerName);
-			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
-			Assert.AreEqual(expected.ClientInterfaceName, actual.ClientInterfaceName);
-			Assert.AreEqual(expected.Language, actual.Language);
-			Assert.AreEqual(expected.Database, actual.Database);
-			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
-			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
-			Assert.AreEqual(expected.AttachDBFile, actual.AttachDBFile);
-			Assert.AreEqual(expected.ChangePassword, actual.ChangePassword);
+			Assert.Equal(expected.TdsVersion, actual.TdsVersion);
+			Assert.Equal(expected.PacketSize, actual.PacketSize);
+			Assert.Equal(expected.ClientProgVer, actual.ClientProgVer);
+			Assert.Equal(expected.ClientPid, actual.ClientPid);
+			Assert.Equal(expected.ConnectionId, actual.ConnectionId);
+			Assert.Equal(expected.OptionFlags1, actual.OptionFlags1);
+			Assert.Equal(expected.OptionFlags2, actual.OptionFlags2);
+			Assert.Equal(expected.TypeFlags, actual.TypeFlags);
+			Assert.Equal(expected.OptionFlags3, actual.OptionFlags3);
+			Assert.Equal(expected.ClientTimeZone, actual.ClientTimeZone);
+			Assert.Equal(expected.ClientLCID, actual.ClientLCID);
+			Assert.Equal(expected.HostName, actual.HostName);
+			Assert.Equal(expected.UserName, actual.UserName);
+			Assert.Equal(expected.Password, actual.Password);
+			Assert.Equal(expected.AppName, actual.AppName);
+			Assert.Equal(expected.ServerName, actual.ServerName);
+			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
+			Assert.Equal(expected.Language, actual.Language);
+			Assert.Equal(expected.Database, actual.Database);
+			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
+			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
+			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInterpretPayloadWithSessionRecovery()
 		{
 			TDSLogin7Message expected =
@@ -149,33 +148,33 @@ namespace TDSProtocolTests
 				};
 			actual.InterpretPayload();
 
-			Assert.AreEqual(expected.TdsVersion, actual.TdsVersion);
-			Assert.AreEqual(expected.PacketSize, actual.PacketSize);
-			Assert.AreEqual(expected.ClientProgVer, actual.ClientProgVer);
-			Assert.AreEqual(expected.ClientPid, actual.ClientPid);
-			Assert.AreEqual(expected.ConnectionId, actual.ConnectionId);
-			Assert.AreEqual(expected.OptionFlags1, actual.OptionFlags1);
-			Assert.AreEqual(expected.OptionFlags2, actual.OptionFlags2);
-			Assert.AreEqual(expected.TypeFlags, actual.TypeFlags);
-			Assert.AreEqual(expected.OptionFlags3, actual.OptionFlags3);
-			Assert.AreEqual(expected.ClientTimeZone, actual.ClientTimeZone);
-			Assert.AreEqual(expected.ClientLCID, actual.ClientLCID);
-			Assert.AreEqual(expected.HostName, actual.HostName);
-			Assert.AreEqual(expected.UserName, actual.UserName);
-			Assert.AreEqual(expected.Password, actual.Password);
-			Assert.AreEqual(expected.AppName, actual.AppName);
-			Assert.AreEqual(expected.ServerName, actual.ServerName);
-			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
-			Assert.AreEqual(expected.ClientInterfaceName, actual.ClientInterfaceName);
-			Assert.AreEqual(expected.Language, actual.Language);
-			Assert.AreEqual(expected.Database, actual.Database);
-			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
-			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
-			Assert.AreEqual(expected.AttachDBFile, actual.AttachDBFile);
-			Assert.AreEqual(expected.ChangePassword, actual.ChangePassword);
+			Assert.Equal(expected.TdsVersion, actual.TdsVersion);
+			Assert.Equal(expected.PacketSize, actual.PacketSize);
+			Assert.Equal(expected.ClientProgVer, actual.ClientProgVer);
+			Assert.Equal(expected.ClientPid, actual.ClientPid);
+			Assert.Equal(expected.ConnectionId, actual.ConnectionId);
+			Assert.Equal(expected.OptionFlags1, actual.OptionFlags1);
+			Assert.Equal(expected.OptionFlags2, actual.OptionFlags2);
+			Assert.Equal(expected.TypeFlags, actual.TypeFlags);
+			Assert.Equal(expected.OptionFlags3, actual.OptionFlags3);
+			Assert.Equal(expected.ClientTimeZone, actual.ClientTimeZone);
+			Assert.Equal(expected.ClientLCID, actual.ClientLCID);
+			Assert.Equal(expected.HostName, actual.HostName);
+			Assert.Equal(expected.UserName, actual.UserName);
+			Assert.Equal(expected.Password, actual.Password);
+			Assert.Equal(expected.AppName, actual.AppName);
+			Assert.Equal(expected.ServerName, actual.ServerName);
+			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
+			Assert.Equal(expected.Language, actual.Language);
+			Assert.Equal(expected.Database, actual.Database);
+			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
+			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
+			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestInterpretPayloadWithFederation()
 		{
 			TDSLogin7Message expected =
@@ -465,33 +464,33 @@ namespace TDSProtocolTests
 			}};
 			actual.InterpretPayload();
 
-			Assert.AreEqual(expected.TdsVersion, actual.TdsVersion);
-			Assert.AreEqual(expected.PacketSize, actual.PacketSize);
-			Assert.AreEqual(expected.ClientProgVer, actual.ClientProgVer);
-			Assert.AreEqual(expected.ClientPid, actual.ClientPid);
-			Assert.AreEqual(expected.ConnectionId, actual.ConnectionId);
-			Assert.AreEqual(expected.OptionFlags1, actual.OptionFlags1);
-			Assert.AreEqual(expected.OptionFlags2, actual.OptionFlags2);
-			Assert.AreEqual(expected.TypeFlags, actual.TypeFlags);
-			Assert.AreEqual(expected.OptionFlags3, actual.OptionFlags3);
-			Assert.AreEqual(expected.ClientTimeZone, actual.ClientTimeZone);
-			Assert.AreEqual(expected.ClientLCID, actual.ClientLCID);
-			Assert.AreEqual(expected.HostName, actual.HostName);
-			Assert.AreEqual(expected.UserName, actual.UserName);
-			Assert.AreEqual(expected.Password, actual.Password);
-			Assert.AreEqual(expected.AppName, actual.AppName);
-			Assert.AreEqual(expected.ServerName, actual.ServerName);
-			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
-			Assert.AreEqual(expected.ClientInterfaceName, actual.ClientInterfaceName);
-			Assert.AreEqual(expected.Language, actual.Language);
-			Assert.AreEqual(expected.Database, actual.Database);
-			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
-			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
-			Assert.AreEqual(expected.AttachDBFile, actual.AttachDBFile);
-			Assert.AreEqual(expected.ChangePassword, actual.ChangePassword);
+			Assert.Equal(expected.TdsVersion, actual.TdsVersion);
+			Assert.Equal(expected.PacketSize, actual.PacketSize);
+			Assert.Equal(expected.ClientProgVer, actual.ClientProgVer);
+			Assert.Equal(expected.ClientPid, actual.ClientPid);
+			Assert.Equal(expected.ConnectionId, actual.ConnectionId);
+			Assert.Equal(expected.OptionFlags1, actual.OptionFlags1);
+			Assert.Equal(expected.OptionFlags2, actual.OptionFlags2);
+			Assert.Equal(expected.TypeFlags, actual.TypeFlags);
+			Assert.Equal(expected.OptionFlags3, actual.OptionFlags3);
+			Assert.Equal(expected.ClientTimeZone, actual.ClientTimeZone);
+			Assert.Equal(expected.ClientLCID, actual.ClientLCID);
+			Assert.Equal(expected.HostName, actual.HostName);
+			Assert.Equal(expected.UserName, actual.UserName);
+			Assert.Equal(expected.Password, actual.Password);
+			Assert.Equal(expected.AppName, actual.AppName);
+			Assert.Equal(expected.ServerName, actual.ServerName);
+			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
+			Assert.Equal(expected.Language, actual.Language);
+			Assert.Equal(expected.Database, actual.Database);
+			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
+			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
+			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestGeneratePayloadSimple()
 		{
 			TDSLogin7Message msg =
@@ -531,10 +530,10 @@ namespace TDSProtocolTests
 			};
 			var actual = msg.Payload;
 
-			EnumerableAssert.AreEqual(expected, actual);
+			EnumerableAssert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestGeneratePayloadWithSessionRecovery()
 		{
 			TDSLogin7Message msg =
@@ -602,10 +601,10 @@ namespace TDSProtocolTests
 			};
 			var actual = msg.Payload;
 
-			EnumerableAssert.AreEqual(expected, actual);
+			EnumerableAssert.Equal(expected, actual);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void TestGeneratePayloadWithFederation()
 		{
 			TDSLogin7Message msg =
@@ -893,7 +892,7 @@ namespace TDSProtocolTests
 			};
 			byte[] actual = msg.Payload;
 
-			EnumerableAssert.AreEqual(expected, actual);
+			EnumerableAssert.Equal(expected, actual);
 		}
 
 		public class FeatureOptComparer : IComparer<TDSLogin7Message.FeatureOpt>

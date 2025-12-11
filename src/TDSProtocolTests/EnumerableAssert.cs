@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace TDSProtocolTests
 {
@@ -37,14 +37,10 @@ namespace TDSProtocolTests
 					if (comparer.Compare(expectedIterator.Current, actualIterator.Current) != 0)
 					{
 						var lastDigit = idx % 10;
-						Assert.AreEqual(
-							expectedIterator.Current,
-							actualIterator.Current,
-							"The {0}{1} element in the sequences differed",
-							idx,
-							(lastDigit > 3 || lastDigit == 0 || ((idx / 10) == 1)) ? "th" :
+						var suffix = (lastDigit > 3 || lastDigit == 0 || ((idx / 10) == 1)) ? "th" :
 							lastDigit == 1 ? "st" :
-							lastDigit == 2 ? "nd" : "rd");
+							lastDigit == 2 ? "nd" : "rd";
+						Assert.Fail($"The {idx}{suffix} element in the sequences differed. Expected: {expectedIterator.Current}, Actual: {actualIterator.Current}");
 					}
 				}
 
@@ -55,7 +51,7 @@ namespace TDSProtocolTests
 					uint expectedCount = count + 1;
 					while (expectedIterator.MoveNext())
 						expectedCount++;
-					Assert.AreEqual(expectedCount, count, "Sequences were not of same length");
+					Assert.Fail($"Sequences were not of same length. Expected: {expectedCount}, Actual: {count}");
 				}
 
 				if (moreActual)
@@ -63,7 +59,7 @@ namespace TDSProtocolTests
 					uint actualCount = count + 1;
 					while (actualIterator.MoveNext())
 						actualCount++;
-					Assert.AreEqual(count, actualCount, "Sequences were not of same length");
+					Assert.Fail($"Sequences were not of same length. Expected: {count}, Actual: {actualCount}");
 				}
 			}
 		}
