@@ -67,12 +67,12 @@ namespace TDSProtocolTests
 			Assert.Equal(expected.Password, actual.Password);
 			Assert.Equal(expected.AppName, actual.AppName);
 			Assert.Equal(expected.ServerName, actual.ServerName);
-			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
 			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
 			Assert.Equal(expected.Language, actual.Language);
 			Assert.Equal(expected.Database, actual.Database);
-			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
-			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
+			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
 			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
 			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
@@ -164,12 +164,12 @@ namespace TDSProtocolTests
 			Assert.Equal(expected.Password, actual.Password);
 			Assert.Equal(expected.AppName, actual.AppName);
 			Assert.Equal(expected.ServerName, actual.ServerName);
-			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
 			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
 			Assert.Equal(expected.Language, actual.Language);
 			Assert.Equal(expected.Database, actual.Database);
-			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
-			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
+			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
 			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
 			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
@@ -480,12 +480,12 @@ namespace TDSProtocolTests
 			Assert.Equal(expected.Password, actual.Password);
 			Assert.Equal(expected.AppName, actual.AppName);
 			Assert.Equal(expected.ServerName, actual.ServerName);
-			EnumerableAssert.Equal(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
+			EnumerableAssert.AreEqual(expected.FeatureExt, actual.FeatureExt, FeatureOptComparer.Instance);
 			Assert.Equal(expected.ClientInterfaceName, actual.ClientInterfaceName);
 			Assert.Equal(expected.Language, actual.Language);
 			Assert.Equal(expected.Database, actual.Database);
-			EnumerableAssert.Equal(expected.ClientID, actual.ClientID);
-			EnumerableAssert.Equal(expected.SSPI, actual.SSPI);
+			EnumerableAssert.AreEqual(expected.ClientID, actual.ClientID);
+			EnumerableAssert.AreEqual(expected.SSPI, actual.SSPI);
 			Assert.Equal(expected.AttachDBFile, actual.AttachDBFile);
 			Assert.Equal(expected.ChangePassword, actual.ChangePassword);
 		}
@@ -530,7 +530,7 @@ namespace TDSProtocolTests
 			};
 			var actual = msg.Payload;
 
-			EnumerableAssert.Equal(expected, actual);
+			EnumerableAssert.AreEqual(expected, actual);
 		}
 
 		[Fact]
@@ -601,7 +601,7 @@ namespace TDSProtocolTests
 			};
 			var actual = msg.Payload;
 
-			EnumerableAssert.Equal(expected, actual);
+			EnumerableAssert.AreEqual(expected, actual);
 		}
 
 		[Fact]
@@ -892,7 +892,7 @@ namespace TDSProtocolTests
 			};
 			byte[] actual = msg.Payload;
 
-			EnumerableAssert.Equal(expected, actual);
+			EnumerableAssert.AreEqual(expected, actual);
 		}
 
 		public class FeatureOptComparer : IComparer<TDSLogin7Message.FeatureOpt>
