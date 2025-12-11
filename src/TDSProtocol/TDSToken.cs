@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Runtime.Remoting.Messaging;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace TDSProtocol
@@ -14,15 +14,15 @@ namespace TDSProtocol
 	{
 		#region TdsVersion
 
-		private const string LccKeyForTdsVersion = "com.techsoftware.TDSProtocol.TdsVersion";
+		private static readonly AsyncLocal<uint> TdsVersionStorage = new AsyncLocal<uint>();
 
 		/// <summary>
 		/// TdsVersion for the current message processing.
 		/// </summary>
 		public static uint TdsVersion
 		{
-			get => (CallContext.LogicalGetData(LccKeyForTdsVersion) as uint?).GetValueOrDefault();
-			set => CallContext.LogicalSetData(LccKeyForTdsVersion, value);
+			get => TdsVersionStorage.Value;
+			set => TdsVersionStorage.Value = value;
 		}
 
 		#endregion

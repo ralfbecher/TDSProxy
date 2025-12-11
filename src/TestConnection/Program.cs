@@ -1,5 +1,5 @@
-﻿using System;
-using System.Data.OleDb;
+using System;
+using Microsoft.Data.SqlClient;
 
 namespace TestConnection
 {
@@ -7,11 +7,8 @@ namespace TestConnection
 	{
 		static void Main()
 		{
-			var cn = new OleDbConnection("Provider=SQLNCLI11;Server=pc-mattw.techsoftwareinc.com;Database=IRBM_Dev;Uid=dev\\mattw;Pwd=dev;MARS_Connection=no");
-			// ReSharper disable CommentTypo
-			//var cn = new OdbcConnection("Driver={SQL Server Native Client 11.0};Server=pc-mattw.techsoftwareinc.com;Database=IRBM_Dev;Uid=dev\\mattw;Pwd=dev;MARS_Connection=no");
-			//var cn = new SqlConnection("Server=pc-mattw.techsoftwareinc.com;Database=IRBM_Dev;User id=dev\\mattw;Password=dev;MultipleActiveResultSets=false");
-			// ReSharper restore CommentTypo
+			// Use SqlConnection for cross-platform compatibility
+			var cn = new SqlConnection("Server=pc-mattw.techsoftwareinc.com;Database=IRBM_Dev;User Id=dev\\mattw;Password=dev;MultipleActiveResultSets=false;TrustServerCertificate=true");
 			cn.Open();
 			while (true)
 			{
