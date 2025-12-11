@@ -17,6 +17,7 @@ namespace TDSProtocol
 
 		protected const int HeaderLength = 5;
 
+	#pragma warning disable CS0618, SYSLIB0039 // Intentionally supporting legacy TLS versions for compatibility
 		private static readonly Dictionary<int, SslProtocols> ProtocolVersionNumbers = new Dictionary<int, SslProtocols>
 		{
 			{ 0x0200, SslProtocols.Ssl2 },
@@ -25,6 +26,7 @@ namespace TDSProtocol
 			{ 0x0302, SslProtocols.Tls11 },
 			{ 0x0303, SslProtocols.Tls12 }
 		};
+#pragma warning restore CS0618, SYSLIB0039
 
 		private static readonly HashSet<SslPacketType> KnownPacketTypes =
 			new HashSet<SslPacketType>(Enum.GetValues(typeof(SslPacketType)).Cast<SslPacketType>());
