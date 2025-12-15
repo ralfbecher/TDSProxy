@@ -291,7 +291,7 @@ namespace TDSProxy
 								unwrappedCount = payload.Length;
 							}
 
-							Buffer.BlockCopy(payload, 0, buffer, offset, count);
+							Buffer.BlockCopy(payload, 0, buffer, offset, unwrappedCount);
 							if (VerboseLogging)
 								log.DebugFormat(
 									"Returning {0} bytes from unwrapped data of {1} bytes (caller requested {2}), outsideEP = {3}",
