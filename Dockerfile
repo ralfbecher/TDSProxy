@@ -7,10 +7,18 @@ RUN dotnet publish TDSProxy/TDSProxy.csproj -c Release -o /app
 FROM mcr.microsoft.com/dotnet/runtime:6.0-bullseye-slim
 WORKDIR /app
 
-# Enable TLS 1.0 in OpenSSL config
-RUN sed -i 's/MinProtocol = TLSv1.2/MinProtocol = TLSv1/g' /etc/ssl/openssl.cnf && \
-    sed -i 's/CipherString = DEFAULT:@SECLEVEL=2/CipherString = DEFAULT:@SECLEVEL=0/g' /etc/ssl/openssl.cnf && \
-    echo "Options = UnsafeLegacyRenegotiation" >> /etc/ssl/openssl.cnf
+# Create custom OpenSSL config that enables TLS 1.0
+RUN echo 'openssl_conf = openssl_init\n\
+[openssl_init]\n\
+ssl_conf = ssl_sect\n\
+[ssl_sect]\n\
+system_default = system_default_sect\n\
+[system_default_sect]\n\
+MinProtocol = TLSv1\n\
+CipherString = DEFAULT:@SECLEVEL=0' > /etc/ssl/openssl-tls1.cnf
+
+# Set environment to use custom OpenSSL config
+ENV OPENSSL_CONF=/etc/ssl/openssl-tls1.cnf
 
 # Create logs directory
 RUN mkdir -p /app/logs
