@@ -596,6 +596,18 @@ namespace TDSProxy
 						if (authResult?.AllowConnection == true) break;
 					}
 
+					// If no authenticators configured, pass through credentials
+					if (!_listener.Authenticators.Any())
+					{
+						authResult = new AuthenticationResult
+						{
+							AllowConnection = true,
+							ConnectAsUser = login7.UserName,
+							ConnectUsingPassword = login7.Password,
+							ConnectToDatabase = login7.Database
+						};
+					}
+
 					bool authOk = null != authResult && authResult.AllowConnection;
 					if (!authOk)
 					{
